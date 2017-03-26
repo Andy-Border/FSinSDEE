@@ -1,5 +1,5 @@
 ## Created by Andy ZHao
-## 20-2-2017
+## 26-3-2017
 #_______________________________________________________________________________
 # Initialization
 library(dplyr)
@@ -48,10 +48,6 @@ ISBSG$Resource.Level <- NULL
 
 dData = ISBSG
 responseVNum  <-  which(names(ISBSG) %in% "Normalised.Work.Effort.Level.1")
-#######MIFS########
-#source("MIFS.R")
-#fSet<- MIFS(dData = ISBSG, rFNum = responseVNum, Be = 1.0,k=5);print(colnames(dData)[fSet])
-# fit <- lm(dData[,responseVNum]~dData[,17]+dData[,1]+dData[,13])
 
 #######mRMR########
 source("mRMR.R")
@@ -73,21 +69,18 @@ fSet$featureNames <- recode(fSet$featureNames,
                             Functional.Size = "FSZ",
                             Development.Platform="DP"
 )
+#MI
 MIdistribution <- arrange(fSet,desc(vmi))
 MIdistribution$fNamesForDistribution <- factor(MIdistribution$featureNames, levels=unique(MIdistribution$featureNames))
 drawPic <- ggplot(MIdistribution,aes(x=fNamesForDistribution,y=vmi))
-drawPic+ geom_bar(stat= 'identity', width = 0.5)+ 
+drawPic+ geom_bar(stat= 'identity', width = 0.7)+ 
   theme_economist()+
-  ggtitle(paste("mRMR of Features"))+
-  theme(axis.text.x=element_text(hjust=1,vjust=0.5))
+  ggtitle(paste("Mutual information of the independent variables"))+
+  theme(axis.text.x=element_text(hjust=1,vjust=0.7))
 
-
+#mRMR
 drawPic <- ggplot(fSet,aes(x=featureNames,y=mrmr))
-drawPic+ geom_bar(stat= 'identity', width = 0.5)+ 
+drawPic+ geom_bar(stat= 'identity', width = 0.7)+ 
   theme_economist()+
   ggtitle(paste("mRMR of Features"))+
-  theme(axis.text.x=element_text(hjust=1,vjust=0.5))
-#results <- ordered.by.mRMR("Summary.Work.Effort",dData)
-#fSet<- MIFS(dData = ISBSG, rFNum = responseVNum, Be = 1.0,k=5);print(colnames(dData)[fSet])
-results <- ordena.por.coeficiente("Normalised.Work.Effort.Level.1",ISBSG)
-print(results)
+  theme(axis.text.x=element_text(hjust=1,vjust=0.7))
