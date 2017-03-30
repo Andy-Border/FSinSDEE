@@ -4,6 +4,7 @@
 rm(list = ls())
 setwd("D:/R/FSinSDEEV2")
 library("dplyr")
+library("caret")
 source("import_ISBSG.R")
 source("filter_projects.R")
 #source("select_features.R")
@@ -33,15 +34,12 @@ kFoldnum=3
 
 #for(evNum in 1:kFoldnum){
 ##Seperate input data into two parts: TrainingSet and TestingSet
-rtnList <- seperateSets(dData, kFoldnum)
-testingData <- dData[rtnList$var1,]
-trainingData <-dData[rtnList$var2,]
 
-#evaluate testing set
-evaluation <-EvalTesting(
-  testingData, trainingData, 
-  weight, vecBestSubset,
-  vecColType)
+folds <- createFolds(dData$ResponseVariable, k = 10, list = TRUE, returnTrain = FALSE)
+
+testingData <- dData[folds[[1]],]
+trainingData <-dData[-folds[[1]],]
+
 
 vecMMRE = 0
 vecPRED = 0
