@@ -30,56 +30,28 @@ vecBestSubset <- resultOfFS$S
 weight <- getFeatureWeights_None(vecBestSubset)
 print("feature weight:");print(weight)
 #Part 3: Devide dataSet to k folds
-kFoldnum=3
+kFoldnum=10
 
-#for(evNum in 1:kFoldnum){
-##Seperate input data into two parts: TrainingSet and TestingSet
-
-folds <- createFolds(dData$ResponseVariable, k = 10, list = TRUE, returnTrain = FALSE)
-
-testingData <- dData[folds[[1]],]
-trainingData <-dData[-folds[[1]],]
-
-
+folds <- createFolds(dData$ResponseVariable, k = kFoldnum, list = TRUE, returnTrain = FALSE)
 vecMMRE = 0
 vecPRED = 0
 vecMdMRE = 0
+result <- data.frame(MMRE=numeric(kFoldnum), 
+                     PRED=numeric(kFoldnum), 
+                     MdMRE=numeric(kFoldnum),
+                     stringsAsFactors=FALSE) 
+for(i in 1:kFoldnum){
+  ##Seperate input data into two parts: TrainingSet and TestingSet
+  testingData <- dData[folds[[i]],]
+  trainingData <-dData[-folds[[i]],]
+  evaluation <-  EvalTesting(testingData, trainingData, weight, vecBestSubset,vecColType)
+  result[i,'MMRE'] = MMREFunc(evaluation, nrow(testingData))
+  result[i,'PRED'] = PREDFunc(evaluation, nrow(testingData), 0.25)
+  result[i,'MdMRE'] = MdMREFunc(evaluation, nrow(testingData))
+}
+result[-11,]
+result["Mean" ,] <- colMeans(result,na.rm=T)
 
-evaluation <-
-  EvalTesting(testingData, trainingData, weight, vecBestSubset,vecColType)
+View(result)
 
-#collect the experiment results
-result <- NULL
-
-result$MMRE = MMREFunc(evaluation, nrow(testingData))
-result$PRED = PREDFunc(evaluation, nrow(testingData), 0.25)
-result$MdMRE = MdMREFunc(evaluation, nrow(testingData))
-print(result)
-#print("TestingSet Result:")
-#print(result);
-# # vecMMRE[z] <- result[1]
-# # 
-# # vecPRED[z] <- result[2]
-# # 
-# # vecMdMRE[z] <- result[3]
-# # 
-# 
-# #Part 4: Case Selection
-# #Part 5: Case Adaption
-# #Part 6: Evaluation
-# #}
-# print(vecMMRE)
-# 
-# print("PREDs:")
-# print(vecPRED)
-# 
-# print("MdMREs:")
-# print(vecMdMRE)
-# 
-# print("Average in MMRE:")
-# print(mean(vecMMRE))
-# print("Average in PRED:")
-# print(mean(vecPRED))
-# print("Average in MdMRE:")
-# print(mean(vecMdMRE))
 
