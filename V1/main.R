@@ -25,33 +25,40 @@ vecColType <- c(1,1,1,1,1,1,0,0,0,1,1)
 
 #Part 2: Feature Selection
 resultOfFS<- mRMR(dData = dData, rFNum = ncol(dData),k=ncol(dData)-1)
-vecBestSubset <- resultOfFS$S
-
-weight <- getFeatureWeights_None(vecBestSubset)
+weight <- getFeatureWeights_None(resultOfFS$S)
 print("feature weight:");print(weight)
 #Part 3: Devide dataSet to k folds
-kFoldnum=10
+kFoldnum=3
 
 folds <- createFolds(dData$ResponseVariable, k = kFoldnum, list = TRUE, returnTrain = FALSE)
 vecMMRE = 0
 vecPRED = 0
 vecMdMRE = 0
-result <- data.frame(MMRE=numeric(kFoldnum), 
-                     PRED=numeric(kFoldnum), 
-                     MdMRE=numeric(kFoldnum),
-                     stringsAsFactors=FALSE) 
-for(i in 1:kFoldnum){
-  ##Seperate input data into two parts: TrainingSet and TestingSet
-  testingData <- dData[folds[[i]],]
-  trainingData <-dData[-folds[[i]],]
-  evaluation <-  EvalTesting(testingData, trainingData, weight, vecBestSubset,vecColType)
-  result[i,'MMRE'] = MMREFunc(evaluation, nrow(testingData))
-  result[i,'PRED'] = PREDFunc(evaluation, nrow(testingData), 0.25)
-  result[i,'MdMRE'] = MdMREFunc(evaluation, nrow(testingData))
+resultOfFS$S <- c(7,9,2,10,3,5,11,8,4,1,6)
+print(names(dData[resultOfFS$S]))
+result <- data.frame(MMRE=numeric(ncol(dData)-1), 
+                     PRED=numeric(ncol(dData)-1), 
+                     MdMRE=numeric(ncol(dData)-1),
+                     stringsAsFactors=FALSE)
+for(k in 1:ncol(dData)-1){
+  vecBestSubset <- resultOfFS$S[1:k]
+  tempResult <- data.frame(MMRE=numeric(kFoldnum), 
+                           PRED=numeric(kFoldnum), 
+                           MdMRE=numeric(kFoldnum),
+                           stringsAsFactors=FALSE)
+  for(i in 1:kFoldnum){
+    ##Seperate input data into two parts: TrainingSet and TestingSet
+    testingData <- dData[folds[[i]],]
+    trainingData <-dData[-folds[[i]],]
+    evaluation <-  EvalTesting(testingData, trainingData, weight,vecBestSubset ,vecColType)
+    tempResult[i,'MMRE'] = MMREFunc(evaluation, nrow(testingData))
+    tempResult[i,'PRED'] = PREDFunc(evaluation, nrow(testingData), 0.25)
+    tempResult[i,'MdMRE'] = MdMREFunc(evaluation, nrow(testingData))
+  }
+  tempResult["Mean" ,] <- colMeans(tempResult,na.rm=T)
+  result[k,] <- tempResult["Mean" ,] 
 }
-result[-11,]
-result["Mean" ,] <- colMeans(result,na.rm=T)
 
-View(result)
+ print(result)
 
 
