@@ -4,7 +4,7 @@ mRMR <- function(dData,# data set
                  k = 5,# number of features selected from n features
                  MIMatrix = NULL) {
   # Example:
-  # fSet<- mRMR(dData = ISBSG, rFNum = responseVNum,k=10);print(colnames(dData)[fSet])
+  # resultOfFS<- mRMR(dData = dData, rFNum = ncol(dData),k=ncol(dData)-1)
   
   #browser()
   ## mRMR implementation

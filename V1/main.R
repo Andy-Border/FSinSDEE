@@ -31,10 +31,7 @@ print("feature weight:");print(weight)
 kFoldnum=3
 
 folds <- createFolds(dData$ResponseVariable, k = kFoldnum, list = TRUE, returnTrain = FALSE)
-vecMMRE = 0
-vecPRED = 0
-vecMdMRE = 0
-resultOfFS$S <- c(7,9,2,10,3,5,11,8,4,1,6)
+#resultOfFS$S <- c(7,9,2,10,3,5,11,8,4,1,6)
 print(names(dData[resultOfFS$S]))
 result <- data.frame(MMRE=numeric(ncol(dData)-1), 
                      PRED=numeric(ncol(dData)-1), 
