@@ -28,9 +28,8 @@ vecColType <- c(1,1,1,1,1,1,0,0,0,1,1)
 #Part 2: Feature Selection
 mRMRresult<- mRMR(dData = dData, rFNum = ncol(dData),k=ncol(dData)-1)
 INMIFSresult<- INMIFS(dData = dData, rFNum = ncol(dData),k=ncol(dData)-1)
-
-
-resultOfFS <- mRMRresult
+MIFSResult<- MIFS(dData = dData, rFNum = ncol(dData),k=ncol(dData)-1,Be=0.75)
+resultOfFS <- MIFSResult
 
 weight <- getFeatureWeights_None(resultOfFS$S)
 print("feature weight:");print(weight)
@@ -56,7 +55,7 @@ for(expNum in 1:numOfExperiment){
   kFoldnum=10
   folds <- createFolds(dData$ResponseVariable, k = kFoldnum, list = TRUE, returnTrain = FALSE)
   
-    for(k in 1:ncol(dData)-1){
+  for(k in 1:ncol(dData)-1){
     vecBestSubset <- resultOfFS$S[1:k]
     tempResult <- data.frame(MMRE=numeric(kFoldnum), 
                              PRED=numeric(kFoldnum), 
